@@ -34,8 +34,8 @@ final readonly class Link
     public bool $isStartPage;
     public bool $isPublished;
     public ?string $publishedAt;
-    public ?string $createdAt;
-    public ?string $updatedAt;
+    public string $createdAt;
+    public string $updatedAt;
 
     /**
      * @var list<LinkAlternate>
@@ -96,20 +96,14 @@ final readonly class Link
         Assert::keyExists($values, 'published');
         $this->isPublished = true === $values['published'];
 
-        if (null !== $values['published_at']) {
-            Assert::keyExists($values, 'published_at');
-            $this->publishedAt = $values['published_at'];
-        }
+        Assert::keyExists($values, 'published_at');
+        $this->publishedAt = $values['published_at'] ?? null;
 
-        if (null !== $values['created_at']) {
-            Assert::keyExists($values, 'created_at');
-            $this->createdAt = $values['created_at'];
-        }
+        Assert::keyExists($values, 'created_at');
+        $this->createdAt = $values['created_at'];
 
-        if (null !== $values['updated_at']) {
-            Assert::keyExists($values, 'updated_at');
-            $this->updatedAt = $values['updated_at'];
-        }
+        Assert::keyExists($values, 'updated_at');
+        $this->updatedAt = $values['updated_at'];
 
         $alternates = [];
 
