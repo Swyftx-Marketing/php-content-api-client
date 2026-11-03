@@ -27,7 +27,7 @@ final class StoryblokProvider extends BaseProvider
 {
     /**
      * @param array{
-     *      cv?: integer,
+     *      cv?: int,
      *      stories?: list<array<string, mixed>>,
      *      links?: string[],
      *      rels?: string[],
@@ -35,7 +35,7 @@ final class StoryblokProvider extends BaseProvider
      *  } $overrides
      *
      * @return array{
-     *     cv: integer,
+     *     cv: int,
      *     stories: list<array<string, mixed>>,
      *     links: string[],
      *     rel_uuids: string[],
@@ -78,7 +78,7 @@ final class StoryblokProvider extends BaseProvider
 
     /**
      * @param array{
-     *      cv?: integer,
+     *      cv?: int,
      *      story?: array<string, mixed>,
      *      links?: string[],
      *      rels?: string[],
@@ -86,7 +86,7 @@ final class StoryblokProvider extends BaseProvider
      *  } $overrides
      *
      * @return array{
-     *     cv: integer,
+     *     cv: int,
      *     story: array<string, mixed>,
      *     links: string[],
      *     rels: string[],
@@ -147,31 +147,31 @@ final class StoryblokProvider extends BaseProvider
     /**
      * @param array{
      *     uuid?: string,
-     *     id?: integer,
-     *     parent_id?: integer|null,
+     *     id?: int,
+     *     parent_id?: null|int,
      *     name?: string,
      *     slug?: string,
      *     path?: string,
      *     real_path?: string,
-     *     is_folder?: boolean,
-     *     published?: boolean,
-     *     is_startpage?: boolean,
-     *     position?: integer
+     *     is_folder?: bool,
+     *     published?: bool,
+     *     is_startpage?: bool,
+     *     position?: int
      * } $overrides
      *
      * @return array{
      *     uuid: string,
-     *     id: integer,
-     *     parent_id: integer|null,
+     *     id: int,
+     *     parent_id: null|int,
      *     name: string,
      *     slug: string,
      *     path: string,
      *     real_path: string,
-     *     is_folder: boolean,
-     *     published: boolean,
-     *     is_startpage: boolean,
-     *     position: integer,
-     *     alternates: list<array<string,mixed>>
+     *     is_folder: bool,
+     *     published: bool,
+     *     is_startpage: bool,
+     *     position: int,
+     *     alternates: list<array<string, mixed>>
      * }
      */
     public function linkResponse(array $overrides = []): array
@@ -207,7 +207,7 @@ final class StoryblokProvider extends BaseProvider
      *      lang?: string,
      *      name?: string,
      *      path?: string,
-     *      published?: boolean,
+     *      published?: bool,
      *      translated_slug?: string
      * } $overrides
      *
@@ -215,7 +215,7 @@ final class StoryblokProvider extends BaseProvider
      *     lang: string,
      *     name: string,
      *     path: string,
-     *     published: boolean,
+     *     published: bool,
      *     translated_slug: string
      * }
      */
@@ -379,14 +379,14 @@ final class StoryblokProvider extends BaseProvider
      *     id?: int,
      *     name?: string,
      *     value?: string,
-     *     dimension_value?: string|null
+     *     dimension_value?: null|string
      * } $overrides
      *
      * @return array{
      *     id: int,
      *     name: string,
      *     value: string,
-     *     dimension_value: string|null
+     *     dimension_value: null|string
      * }
      */
     public function datasourceEntryResponse(array $overrides = []): array
@@ -443,7 +443,7 @@ final class StoryblokProvider extends BaseProvider
      *     id?: int,
      *     name?: string,
      *     value?: string,
-     *     dimension_value?: string|null
+     *     dimension_value?: null|string
      * }>,
      * } $overrides
      *
@@ -452,7 +452,7 @@ final class StoryblokProvider extends BaseProvider
      *     id: int,
      *     name: string,
      *     value: string,
-     *     dimension_value: string|null
+     *     dimension_value: null|string
      *   }>,
      * }
      */
@@ -482,6 +482,12 @@ final class StoryblokProvider extends BaseProvider
      *      content_length?: int,
      *      signed_url?: string,
      *      content_type?: string,
+     *      alt?: null|string,
+     *      asset_folder_id?: null|int,
+     *      copyright?: null|string,
+     *      focus?: null|string,
+     *      is_private?: bool,
+     *      title?: null|string,
      *   },
      * } $overrides
      *
@@ -494,6 +500,12 @@ final class StoryblokProvider extends BaseProvider
      *     content_length: int,
      *     signed_url: string,
      *     content_type: string,
+     *     alt: null|string,
+     *     asset_folder_id: null|int,
+     *     copyright: null|string,
+     *     focus: null|string,
+     *     is_private: bool,
+     *     title: null|string,
      *   },
      * }
      */
@@ -508,6 +520,12 @@ final class StoryblokProvider extends BaseProvider
                 'content_length' => $this->generator->numberBetween(1),
                 'signed_url' => $this->generator->url(),
                 'content_type' => $this->generator->word(),
+                'alt' => $this->generator->boolean() ? $this->generator->sentence() : null,
+                'asset_folder_id' => $this->generator->boolean() ? $this->generator->numberBetween(1) : null,
+                'copyright' => $this->generator->boolean() ? $this->generator->sentence() : null,
+                'focus' => $this->generator->boolean() ? $this->generator->numberBetween(0, 100).'x'.$this->generator->numberBetween(0, 100) : null,
+                'is_private' => $this->generator->boolean(),
+                'title' => $this->generator->boolean() ? $this->generator->sentence() : null,
             ],
         ];
 

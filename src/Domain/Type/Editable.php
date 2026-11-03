@@ -26,7 +26,7 @@ use function Safe\json_encode;
  *
  * @author Silas Joisten <silasjoisten@proton.me>
  */
-final readonly class Editable
+final readonly class Editable implements \Stringable
 {
     public Uuid $uuid;
     public Id $id;
@@ -45,7 +45,6 @@ final readonly class Editable
         );
 
         Assert::keyExists($values, 'uid');
-        Assert::uuid($values['uid']);
         $this->uuid = new Uuid($values['uid']);
 
         Assert::keyExists($values, 'id');

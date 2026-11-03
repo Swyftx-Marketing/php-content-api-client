@@ -26,6 +26,7 @@ final readonly class Link
     public Uuid $uuid;
     public ?Id $parentId;
     public string $name;
+    public ?string $fullSlug;
     public string $slug;
     public ?string $path;
     public string $realPath;
@@ -33,6 +34,7 @@ final readonly class Link
     public bool $isFolder;
     public bool $isStartPage;
     public bool $isPublished;
+    public ?string $anchor;
 
     /**
      * @var list<LinkAlternate>
@@ -66,6 +68,15 @@ final readonly class Link
         Assert::keyExists($values, 'name');
         $this->name = TrimmedNonEmptyString::fromString($values['name'], 'The value of the "name" key must be a non-empty, trimmed string. Got: %s')->toString();
 
+        // This field is only set when using the stories api with resolve_links flag.
+        $fullSlug = null;
+
+        if (\array_key_exists('full_slug', $values) && null !== $values['full_slug']) {
+            $fullSlug = TrimmedNonEmptyString::fromString($values['full_slug'], 'The value of the "full_slug" key must be a non-empty, trimmed string. Got: %s')->toString();
+        }
+
+        $this->fullSlug = $fullSlug;
+
         Assert::keyExists($values, 'slug');
         $this->slug = TrimmedNonEmptyString::fromString($values['slug'], 'The value of the "slug" key must be a non-empty, trimmed string. Got: %s')->toString();
 
@@ -92,6 +103,16 @@ final readonly class Link
 
         Assert::keyExists($values, 'published');
         $this->isPublished = true === $values['published'];
+
+        // This field is only set when using the stories api with resolve_links flag
+        // and the original multilink field contains an anchor.
+        $anchor = null;
+
+        if (\array_key_exists('anchor', $values) && null !== $values['anchor'] && '' !== $values['anchor']) {
+            $anchor = TrimmedNonEmptyString::fromString($values['anchor'], 'The value of the "anchor" key must be a non-empty, trimmed string. Got: %s')->toString();
+        }
+
+        $this->anchor = $anchor;
 
         $alternates = [];
 
@@ -130,7 +151,7 @@ final readonly class Link
     public function getSlug(?string $lang = null): string
     {
         if (null === $lang) {
-            return $this->slug;
+            return $this->fullSlug ?? $this->slug;
         }
 
         return $this->getAlternate($lang)->slug;

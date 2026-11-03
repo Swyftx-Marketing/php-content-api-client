@@ -14,10 +14,15 @@ declare(strict_types=1);
 
 namespace Storyblok\Api\Tests\Unit\Request;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Storyblok\Api\Domain\Value\Dto\Direction;
 use Storyblok\Api\Domain\Value\Dto\SortBy;
+use Storyblok\Api\Domain\Value\Dto\SortByCollection;
+use Storyblok\Api\Domain\Value\Dto\SortByDataType;
+use Storyblok\Api\Domain\Value\Dto\SortByNulls;
+use Storyblok\Api\Domain\Value\Dto\StoryLevel;
 use Storyblok\Api\Domain\Value\Dto\Version;
 use Storyblok\Api\Domain\Value\Field\Field;
 use Storyblok\Api\Domain\Value\Field\FieldCollection;
@@ -72,6 +77,35 @@ final class StoriesRequestTest extends TestCase
             'page' => 1,
             'per_page' => 25,
             'sort_by' => 'name:asc',
+        ], $request->toArray());
+    }
+
+    #[Test]
+    public function toArrayWithAdvancedSortBy(): void
+    {
+        $request = new StoriesRequest(sortBy: new SortBy('content.price', Direction::Asc, SortByDataType::Float, SortByNulls::Last));
+
+        self::assertSame([
+            'language' => 'default',
+            'page' => 1,
+            'per_page' => 25,
+            'sort_by' => 'content.price:asc:float:nulls_last',
+        ], $request->toArray());
+    }
+
+    #[Test]
+    public function toArrayWithSortByCollection(): void
+    {
+        $request = new StoriesRequest(sortBy: new SortByCollection([
+            new SortBy('name', Direction::Desc),
+            new SortBy('slug', Direction::Asc),
+        ]),);
+
+        self::assertSame([
+            'language' => 'default',
+            'page' => 1,
+            'per_page' => 25,
+            'sort_by' => 'name:desc,slug:asc',
         ], $request->toArray());
     }
 
@@ -365,5 +399,76 @@ final class StoriesRequestTest extends TestCase
             'per_page' => 25,
             'by_slugs' => 'path/*,another-path/*',
         ], $request->toArray());
+    }
+
+
+    #[Test]
+    public function toArrayWithContentType(): void
+    {
+        $request = new StoriesRequest(
+            contentType: 'article',
+        );
+
+        self::assertSame([
+            'language' => 'default',
+            'page' => 1,
+            'per_page' => 25,
+            'content_type' => 'article',
+        ], $request->toArray());
+    }
+
+
+    #[DataProvider('levelProvider')]
+    #[Test]
+    public function toArrayLevel(StoryLevel $level, int $expected): void
+    {
+        $request = new StoriesRequest(
+            level: $level,
+        );
+
+        self::assertSame([
+            'language' => 'default',
+            'page' => 1,
+            'per_page' => 25,
+            'level' => $expected,
+        ], $request->toArray());
+    }
+
+
+    #[DataProvider('isStartpageProvider')]
+    #[Test]
+    public function toArrayIsStartpage(bool $isStartpage, int $expected): void
+    {
+        $request = new StoriesRequest(
+            isStartpage: $isStartpage,
+        );
+
+        self::assertSame([
+            'language' => 'default',
+            'page' => 1,
+            'per_page' => 25,
+            'is_startpage' => $expected,
+        ], $request->toArray());
+    }
+
+
+    /**
+     * @return iterable<string, array{0: StoryLevel, 1: int}>
+     */
+    public static function levelProvider(): iterable
+    {
+        yield 'root' => [StoryLevel::Root, 1];
+        yield 'top-level' => [StoryLevel::TopLevel, 2];
+        yield 'second-level' => [StoryLevel::SecondLevel, 3];
+    }
+
+
+    /**
+     * @return iterable<string, array{0: bool, 1: int}>
+     */
+    public static function isStartpageProvider(): iterable
+    {
+        yield 'true' => [true, 1];
+        yield 'false' => [false, 0];
     }
 }
