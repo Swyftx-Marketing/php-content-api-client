@@ -89,4 +89,13 @@ final class RelationCollection implements \Countable, \IteratorAggregate
     {
         return implode(',', array_map(static fn (Relation $relation): string => $relation->value, $this->items));
     }
+
+    public static function fromString(string $data): self
+    {
+        if ('' === $data) {
+            return new self();
+        }
+
+        return new self(\array_map(static fn (string $value): Relation => new Relation($value), \explode(',', $data)));
+    }
 }
